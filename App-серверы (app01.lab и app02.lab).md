@@ -40,6 +40,7 @@ sudo mysql_secure_installation
 #sudo chown -R mysql:mysql /usr/local/mysql/var 
 ```
 
+## Конфиги
 ```bash
 vi /etc/my.cnf.d/server.cnf
 ```
@@ -165,17 +166,7 @@ wsrep_node_name="app02"
 # use this group for options that older servers don't understand
 [mariadb-10.11]
 ```
-
-## запуск
-```bash
-sudo galera_new_cluster  # app01
-sudo systemctl start mariadb  # app02
-
-тест репликации
-
-
-```
-## исходник /etc/my.cnf.d/mariadb-server.cnf
+### исходник /etc/my.cnf.d/mariadb-server.cnf
 ```bash
 #
 # These groups are read by MariaDB server.
@@ -226,3 +217,29 @@ sudo systemctl start mariadb  # app02
 # use this group for options that older servers don't understand
 [mariadb-10.11]
 ```
+## Запуск
+```bash
+sudo galera_new_cluster  # app01
+sudo systemctl start mariadb  # app02
+```
+
+## тест репликации
+```bash
+mysql -uroot
+```
+```sql
+USE test;
+SHOW TABLES;
+INSERT INTO test (id, name) VALUES ('2', 'second name');
+SELECT * FROM test;
++----+-------------+
+| id | name        |
++----+-------------+
+|  1 | name        |
+|  2 | second name |
++----+-------------+
+```
+Проверяем SELECT на втором сервере, что данные в таблицу сохранились 
+Теперь проверяем работу кворума, принудительно вырубаем один сервак и снова обновляем таблицу
+
+
