@@ -256,3 +256,50 @@ SELECT * FROM test;
 |  3 | qwerty      |
 +----+-------------+
 ```
+
+# Nextcloud 28
+## подготовка среды
+## установка php
+```bash
+app01
+sudo dnf install epel-release -y
+dnf -y install https://rpms.remirepo.net/enterprise/remi-release-9.2.rpm
+dnf module list php
+dnf module reset php
+dnf module enable php:remi-8.3
+dnf install php php-{bz2,ctype,curl,fpm,gd,imagick,intl,json,fileinfo,libxml,mbstring,mysqlnd,openssl,posix,session,simplexml,xmlreader,xmlwriter,zip,zlib}
+
+php -v
+PHP 8.3.16 (cli) (built: Jan 14 2025 18:25:29) (NTS gcc x86_64)
+Copyright (c) The PHP Group
+Zend Engine v4.3.16, Copyright (c) Zend Technologies
+    with Zend OPcache v8.3.16, Copyright (c), by Zend Technologies
+```
+## PHP-FPM
+```bash
+vi /etc/php-fpm.d/www.conf
+ставим nginx вместо apache 
+user = nginx  
+group = nginx
+
+vi /etc/php.ini
+memory_limit = 768M
+date.timezone = Europe/Moscow
+cgi.fixpathinfo = 0
+
+chown -R root.nginx /var/lib/php/opcache/
+chown -R root.nginx /var/lib/php/session/
+
+systemctl restart php-fpm
+systemctl enable php-fpm
+```
+
+## Nginx
+```bash
+dnf install nginx -y
+systemctl enable --now nginx
+```
+
+```bash
+vi /etc/nginx/conf.d/cloud.example.com.conf
+```
